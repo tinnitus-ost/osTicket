@@ -90,7 +90,16 @@ $tpl=$msgtemplates[$selected];
     &nbsp;<i class="help-tip icon-question-sign"
         data-content="<?php echo Format::htmlchars(__($desc['desc'])); ?>"
         data-title="<?php echo Format::htmlchars(__($desc['name'])); ?>"></i>
+<!-- Anpassung Anfang: separate tooltip "Supported Variables" for tasks
     <a style="font-size:10pt" class="tip pull-right" href="#ticket_variables.txt">
+-->
+<?php
+    if ($tpl && is_array($tpl['context']) && in_array('task', $tpl['context']))
+        echo '<a style="font-size:10pt" class="tip pull-right" href="#task_variables.txt">';
+    else
+        echo '<a style="font-size:10pt" class="tip pull-right" href="#ticket_variables.txt">';
+?>
+<!-- Anpassung Ende: separate tooltip "Supported Variables" for tasks -->
     <i class="icon-tags"></i>
     <?php echo __('Supported Variables'); ?></a>
     </h3>

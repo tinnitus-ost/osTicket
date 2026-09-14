@@ -1129,6 +1129,11 @@ class Task extends TaskModel implements RestrictedAccess, Threadable {
             return Format::display($this->getThread()->getVar('original') ?: '');
         case 'subject':
             return Format::htmlchars($this->getTitle());
+// Anpassung Anfang: task templates - add poster and creator
+        case 'creator': // get the poster from the first response
+            $creatorEntry = $this->getThread()->entries->order_by('id')->first();
+            return $creatorEntry ? $creatorEntry->getPoster() : null;
+// Anpassung Ende: task templates - add poster and creator
         default:
             if (isset($this->_answers[$tag]))
                 // The answer object is retrieved here which will
@@ -1156,6 +1161,12 @@ class Task extends TaskModel implements RestrictedAccess, Threadable {
                 'class' => 'FormattedDate', 'desc' => __('Due Date'),
             ),
             'number' => __('Task Number'),
+// Anpassung Anfang: task templates - add poster and creator
+            'creator' => array(
+                'class' => 'Staff', 'desc' => __('Agent who created the task'),
+            ),
+            'id' => __('Task ID').' ('.__('internal ID').')',
+// Anpassung Ende: task templates - add poster and creator
             'recipients' => array(
                 'class' => 'UserList', 'desc' => __('List of all recipient names'),
             ),
@@ -1231,6 +1242,10 @@ class Task extends TaskModel implements RestrictedAccess, Threadable {
 
         $msg = $this->replaceVars($msg->asArray(),
                 array(
+// Anpassung Anfang: task templates - add poster and creator
+                    'creator' => $this->getVar('creator'),
+                    'poster'  => $thisstaff,
+// Anpassung Ende: task templates - add poster and creator
                     'note' => $vars['threadentry'], // For compatibility
                     'activity' => $vars['activity'],
                     'message' => $vars['message']));
@@ -1554,6 +1569,11 @@ class Task extends TaskModel implements RestrictedAccess, Threadable {
 
         $options = array();
         $staffId = $thisstaff ? $thisstaff->getId() : 0;
+// Anpassung Anfang: task templates - add poster and creator
+        $vars['creator'] = $vars['poster'] = $thisstaff;
+        if (($entry = $this->getThreadEntries()->first()) && $entry instanceof ThreadEntry)
+            $vars['message'] = $entry;
+// Anpassung Ende: task templates - add poster and creator
 
         $msg = $this->replaceVars($msg->asArray(), $vars);
 

@@ -153,6 +153,9 @@ class EmailTemplateGroup {
             'desc'=>/* @trans */ 'Alert sent to agents, if enabled, on new task.',
             'context' => array(
                 'task', 'recipient', 'message',
+// Anpassung Anfang: task templates - add poster and creator (for new tasks)
+                'creator', 'poster',
+// Anpassung Ende: task templates - add poster
             ),
         ),
         'task.activity.notice' => array(
@@ -161,6 +164,9 @@ class EmailTemplateGroup {
             'desc'=>/* @trans */ 'Template used to notify collaborators on task activity.',
             'context' => array(
                 'task', 'signature', 'message', 'poster', 'recipient',
+// Anpassung Anfang: task templates - add poster and creator (for new tasks)
+                'creator',
+// Anpassung Ende: task templates - add poster
             ),
         ),
         'task.activity.alert'=>array(
@@ -169,6 +175,9 @@ class EmailTemplateGroup {
             'desc'=>/* @trans */ 'Alert sent to selected agents, if enabled, on new activity.',
             'context' => array(
                 'task', 'recipient', 'note', 'comments', 'activity',
+// Anpassung Anfang: task templates - add poster and creator (for task updates)
+                'creator', 'poster',
+// Anpassung Ende: task templates - add poster
             ),
         ),
         'task.assignment.alert' => array(
