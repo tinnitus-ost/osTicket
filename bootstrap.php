@@ -370,7 +370,7 @@ define('GIT_VERSION', '8d38b06'); // Set by installer
 define('MAJOR_VERSION', '1.18');
 define('THIS_VERSION', 'v1.18.4'); // Set by installer
 // Anpassung Anfang: set de-Version
-define('DE_VERSION', '2');
+define('DE_VERSION', '4');
 define('DE_VERSION_TYPE', 'FREE');
 // Anpassung Ende:  set de-Version
 //Path separator
