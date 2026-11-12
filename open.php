@@ -61,7 +61,7 @@ if ($_POST) {
 // Anpassung Anfang: spam protection by time
     if(   !($thisclient && $thisclient->getId() && $thisclient->isValid()) // ignore time control, if client is logged in
        && AntiSpam_ByTime::isAvailable()
-       && ($check = AntiSpam_ByTime::checkTimeHash($_POST['thash'])) !== true
+       && ($check = AntiSpam_ByTime::checkTimeHash($_POST['thash']??'')) !== true
       ) {
         $errors['err']=$check;
         $ost->logWarning(__('bot detection'),__('Ticket denied by bot detection! (form filling time checked)').' - '.$check, false);

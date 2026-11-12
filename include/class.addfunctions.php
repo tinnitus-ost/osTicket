@@ -714,11 +714,12 @@ class AntiSpam_ByTime {
         return openssl_encrypt($time->getTimestamp(), self::$cipher, self::$key, 0, self::$iv);
     }
 
-    static function checkTimeHash(string $timeHash='') {
+    static function checkTimeHash(mixed $timeHash=null): bool|string {
         if(!self::isAvailable())
             return false;
 
-        if(   !$timeHash 
+        if(   !$timeHash
+           || !is_string($timeHash)
            || !($decryptedTime = openssl_decrypt($timeHash, self::$cipher, self::$key, 0, self::$iv))
           ) // timeHash manipulated
             return __('Encrypted timespamp was manipulated');
