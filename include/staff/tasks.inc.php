@@ -460,9 +460,6 @@ if ($thisstaff->hasPerm(Task::PERM_DELETE, false)) {
                 </td>
                 <td nowrap>&nbsp;<?php echo Format::truncate($dept, 40); ?></td>
                 <td nowrap>&nbsp;<?php echo $assignee; ?></td>
-<?php // Anpassung Anfang: TimeRecordingPlugin - add time column to task list
-Signal::send('tasklist.field', $T);
-// Anpassung Ende: TimeRecordingPlugin - add time column to task list ?>
             </tr>
             <?php
             } //end of foreach
