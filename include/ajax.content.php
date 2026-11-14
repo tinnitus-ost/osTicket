@@ -79,6 +79,13 @@ class ContentAjaxAPI extends AjaxController {
                     <tr><td>%{ticket.staff}</td><td>'.__('Assigned/closing agent').'</td></tr>
                     <tr><td>%{ticket.team}</td><td>'.__('Assigned/closing team').'</td></tr>
                     <tr><td>%{ticket.thread}</td><td>'.__('Ticket Thread').'</td></tr>
+                    <tr><td colspan="2"><b>'.__('Name Expansion').'</b></td></tr>
+                    <tr><td>.first</td><td>'.__('First Name').'</td></tr>
+                    <tr><td>.last</td><td>'.__('Last Name').'</td></tr>
+                    <tr><td>.full</td><td>'.__('First Last').'</td></tr>
+                    <tr><td>.short</td><td>'.__('First L.').'</td></tr>
+                    <tr><td>.shortformal</td><td>'.__('F. Last').'</td></tr>
+                    <tr><td>.lastfirst</td><td>'.__('Last, First').'</td></tr>
                 </table>
             </td>
             <td valign="top">
@@ -95,19 +102,19 @@ class ContentAjaxAPI extends AjaxController {
                         <td>'.__('Reset link used by the password reset feature').'</td></tr>
                 </table>
                 <table width="100%" border="0" cellspacing=1 cellpadding=1>
-                    <tr><td colspan="2"><b>'.__('Name Expansion').'</b></td></tr>
-                    <tr><td>.first</td><td>'.__('First Name').'</td></tr>
-                    <tr><td>.last</td><td>'.__('Last Name').'</td></tr>
-                    <tr><td>.full</td><td>'.__('First Last').'</td></tr>
-                    <tr><td>.short</td><td>'.__('First L.').'</td></tr>
-                    <tr><td>.shortformal</td><td>'.__('F. Last').'</td></tr>
-                    <tr><td>.lastfirst</td><td>'.__('Last, First').'</td></tr>
                     <tr><td colspan="2" style="padding:5px 0 5px 0;"><em><b>'.__('Ticket Thread expansions').'</b></em></td></tr>
                     <tr><td>.original</td><td>'.__('Original Message').'</td></tr>
                     <tr><td>.lastmessage</td><td>'.__('Last Message').'</td></tr>
                     <tr><td colspan="2" style="padding:5px 0 5px 0;"><em><b>'.__('Thread Entry expansions').'</b></em></td></tr>
                     <tr><td>.poster</td><td>'.__('Poster').'</td></tr>
                     <tr><td>.create_date</td><td>'.__('Date Created').'</td></tr>
+                    <tr><td>.title</td><td>'.__('Subject, if any').'</td></tr>
+                    <tr><td>.body</td><td>'.__('Message body').'</td></tr>
+                    <tr><td>.files</td><td>'.__('Attached files').'</td></tr>
+                    <tr><td>.create_date</td><td>'.__('Date created').'</td></tr>
+                    <tr><td>.ip_address</td><td>'.__('IP address of remote user, for web submissions').'</td></tr>
+                    <tr><td>.poster</td><td>'.__('Submitter of the thread item').'</td></tr>
+                    <tr><td>.staff</td><td>'.__('Agent posting the note or response').'</td></tr>
                 </table>
             </td>
         </tr>
@@ -117,6 +124,93 @@ class ContentAjaxAPI extends AjaxController {
         return $content;
     }
 
+// Anpassung Anfang: separate tooltip "Supported Variables" for tasks
+    function task_variables() {
+
+        // Placeholder cells must never wrap - "%{comments}" broken into
+        // "%" + "{comments}" is unreadable and blows up the row height.
+        $ph = 'style="white-space:nowrap;padding-right:12px"';
+        $grp = 'style="padding:7px 0 2px 0;"';
+
+        $content='
+<div style="width:740px;">
+    <h2>'.__('Task Variables').'</h2>
+    '.__('Please note that non-base variables depend on the context of use. Visit osTicket Wiki for up to date documentation.').'
+    <br/>
+    <table width="100%" border="0" cellspacing=1 cellpadding=2 style="table-layout:fixed">
+        <tr>
+            <td width="52%" valign="top"><b>'.__('Base Variables').'</b></td>
+            <td valign="top"><b>'.__('Name Expansion').'</b></td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <table width="100%" border="0" cellspacing=1 cellpadding=1>
+                    <tr><td '.$ph.' width="150">%{task.id}</td><td>'.__('Task ID').' ('.__('internal ID').')</td></tr>
+                    <tr><td '.$ph.'>%{task.number}</td><td>'.__('Task Number').'</td></tr>
+                    <tr><td '.$ph.'>%{task.title}</td><td>'.__('Title').'</td></tr>
+                    <tr><td '.$ph.'>%{task.subject}</td><td>'.__('Subject').'</td></tr>
+                    <tr><td '.$ph.'>%{task.status}</td><td>'.__('Status').'</td></tr>
+                    <tr><td '.$ph.'>%{task.create_date}</td><td>'.__('Date Created').'</td></tr>
+                    <tr><td '.$ph.'>%{task.due_date}</td><td>'.__('Due Date').'</td></tr>
+                    <tr><td '.$ph.'>%{task.close_date}</td><td>'.__('Date Closed').'</td></tr>
+                    <tr><td '.$ph.'>%{task.last_update}</td><td>'.__('Time of last update').'</td></tr>
+                    <tr><td '.$ph.'>%{task.description}</td><td>'.__('Description').'</td></tr>
+                    <tr><td '.$ph.'>%{task.recipients}</td><td>'.__('List of all recipient names').'</td></tr>
+                    <tr><td colspan="2" '.$grp.'><em><b>'.__('Expandable Variables').'</b></em></td></tr>
+                    <tr><td '.$ph.'>%{task.dept}</td><td>'.__('Department').'</td></tr>
+                    <tr><td '.$ph.'>%{task.creator}</td><td>'.__('Agent who created the task').'</td></tr>
+                    <tr><td '.$ph.'>%{task.assigned}</td><td>'.__('Assigned Agent / Team').'</td></tr>
+                    <tr><td '.$ph.'>%{task.staff}</td><td>'.__('Assigned/closing agent').'</td></tr>
+                    <tr><td '.$ph.'>%{task.team}</td><td>'.__('Assigned/closing team').'</td></tr>
+                    <tr><td '.$ph.'>%{task.thread}</td><td>'.__('Task Thread').'</td></tr>
+                    <tr><td '.$ph.'>%{task.staff_link}</td><td>'.__('Link to view the task').'</td></tr>
+                    <tr><td '.$ph.'>%{task.ticket_link}</td><td>'.__('Link to view the task inside the ticket').'</td></tr>
+                    <tr><td colspan="2" '.$grp.'><em><b>'.__('Task activity templates').'</b></em></td></tr>
+                    <tr><td '.$ph.'>%{message}</td><td>'.__('Message').' ('.__('New Task').')</td></tr>
+                    <tr><td '.$ph.'>%{note}</td><td>'.__('Internal note').' ('.sprintf(__('Update %s'), __('Task')).')</td></tr>
+                    <tr><td '.$ph.'>%{activity}</td><td>'.__('Type of recent activity').'</td></tr>
+                    <tr><td '.$ph.'>%{creator}</td><td>'.__('Agent who created the task').'</td></tr>
+                    <tr><td '.$ph.'>%{poster}</td><td>'.__('Poster').'</td></tr>
+                    <tr><td colspan="2" '.$grp.'><em><b>'.__('Task assignment and transfer templates').'</b></em></td></tr>
+                    <tr><td '.$ph.'>%{comments}</td><td>'.__('Assign/transfer comments').'</td></tr>
+                    <tr><td '.$ph.'>%{assignee}</td><td>'.__('Assigned Agent / Team').'</td></tr>
+                    <tr><td '.$ph.'>%{assigner}</td><td>'.__('Agent performing the assignment').'</td></tr>
+                    <tr><td '.$ph.'>%{staff}</td><td>'.__('Agent performing the transfer').'</td></tr>
+                </table>
+            </td>
+            <td valign="top">
+                <table width="100%" border="0" cellspacing=1 cellpadding=1>
+                    <tr><td '.$ph.'>.name.first</td><td>'.__('First Name').'</td></tr>
+                    <tr><td '.$ph.'>.name.last</td><td>'.__('Last Name').'</td></tr>
+                    <tr><td '.$ph.'>.name.full</td><td>'.__('First Last').'</td></tr>
+                    <tr><td '.$ph.'>.name.short</td><td>'.__('First L.').'</td></tr>
+                    <tr><td '.$ph.'>.name.shortformal</td><td>'.__('F. Last').'</td></tr>
+                    <tr><td '.$ph.'>.name.lastfirst</td><td>'.__('Last, First').'</td></tr>
+                    <tr><td colspan="2" '.$grp.'><em><b>'.__('Task Thread expansions').'</b></em><br>( %{task.thread} )</td></tr>
+                    <tr><td '.$ph.'>.complete</td><td>'.__('Thread Correspondence').'</td></tr>
+                    <tr><td '.$ph.'>.lastmessage</td><td>'.__('Last Message').'</td></tr>
+                    <tr><td '.$ph.'>.original</td><td>'.__('Original Message').'</td></tr>
+                    <tr><td colspan="2" '.$grp.'><em><b>'.__('Thread Entry expansions').'</b></em><br>( %{message} / %{note} )</td></tr>
+                    <tr><td '.$ph.'>.title</td><td>'.__('Subject, if any').'</td></tr>
+                    <tr><td '.$ph.'>.body</td><td>'.__('Message body').'</td></tr>
+                    <tr><td '.$ph.'>.files</td><td>'.__('Attached files').'</td></tr>
+                    <tr><td '.$ph.'>.create_date</td><td>'.__('Date created').'</td></tr>
+                    <tr><td '.$ph.'>.ip_address</td><td>'.__('IP address of remote user, for web submissions').'</td></tr>
+                    <tr><td '.$ph.'>.poster</td><td>'.__('Submitter of the thread item').'</td></tr>
+                    <tr><td '.$ph.'>.staff</td><td>'.__('Agent posting the note or response').'</td></tr>
+                    <tr><td colspan="2" '.$grp.'><em><b>'.__('Other Variables').'</b></em></td></tr>
+                    <tr><td '.$ph.' width="115">%{recipient}</td><td>'.__('Message recipient').'</td></tr>
+                    <tr><td '.$ph.'>%{url}</td><td>'.__('osTicket\'s base url (FQDN)').'</td></tr>
+                    <tr><td '.$ph.'>%{company}</td><td>'.__('Company Information').'</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>';
+
+        return $content;
+    }
+// Anpassung Ende: separate tooltip "Supported Variables" for tasks
     function getSignature($type, $id=null) {
         global $thisstaff;
 

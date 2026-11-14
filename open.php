@@ -18,6 +18,12 @@ define('SOURCE','Web'); //Ticket source.
 $ticket = null;
 $errors=array();
 if ($_POST) {
+    // If login is required and there is no user or if guest user then
+    // banish to the shadow realm
+    if ($cfg->isClientLoginRequired()
+            && (!$thisclient || $thisclient->isGuest()))
+        require_once 'secure.inc.php';
+
     $vars = $_POST;
     $vars['deptId']=$vars['emailId']=0; //Just Making sure we don't accept crap...only topicId is expected.
     if ($thisclient) {
@@ -55,7 +61,7 @@ if ($_POST) {
 // Anpassung Anfang: spam protection by time
     if(   !($thisclient && $thisclient->getId() && $thisclient->isValid()) // ignore time control, if client is logged in
        && AntiSpam_ByTime::isAvailable()
-       && ($check = AntiSpam_ByTime::checkTimeHash($_POST['thash'])) !== true
+       && ($check = AntiSpam_ByTime::checkTimeHash($_POST['thash']??'')) !== true
       ) {
         $errors['err']=$check;
         $ost->logWarning(__('bot detection'),__('Ticket denied by bot detection! (form filling time checked)').' - '.$check, false);
@@ -106,7 +112,16 @@ if ($ticket
     )
 ) {
     // Thank the user and promise speedy resolution!
+/* Anpassung Anfang: move page to client template folder
+    echo Format::viewableImages(
+        $ticket->replaceVars(
+            $page->getLocalBody()
+        ),
+        ['type' => 'P']
+    );
+*/
     require(CLIENTINC_DIR.'open-thankyou.inc.php');
+// Anpassung Ende: move page to client template folder
 }
 else {
     require(CLIENTINC_DIR.'open.inc.php');

@@ -69,6 +69,14 @@ if (osTicket::is_ie())
 <!-- Anpassung Ende: help-topic-drop-down (jsTree) -->
 
     <?php
+// Anpassung Anfang: TimeRecordingPlugin - signal header.scp: plugins can add page headers
+    // Plugins are bootstrapped before $ost exists and cannot add headers
+    // themselves. Handlers may call $ost->addExtraHeader() here.
+    if ($ost) {
+        $headerInfo = ['pjax' => false];
+        Signal::send('header.scp', $ost, $headerInfo);
+    }
+// Anpassung Ende: TimeRecordingPlugin - signal header.scp: plugins can add page headers
     if($ost && ($headers=$ost->getExtraHeaders())) {
         echo "\n\t".implode("\n\t", $headers)."\n";
     }
@@ -107,6 +115,10 @@ if (osTicket::is_ie())
     <div id="pjax-container" class="<?php if ($_POST) echo 'no-pjax'; ?>">
 <?php } else {
     header('X-PJAX-Version: ' . GIT_VERSION);
+// Anpassung Anfang: TimeRecordingPlugin - signal header.scp: plugins can add page headers
+    $headerInfo = ['pjax' => true];
+    Signal::send('header.scp', $ost, $headerInfo);
+// Anpassung Ende: TimeRecordingPlugin - signal header.scp: plugins can add page headers
     if ($pjax = $ost->getExtraPjax()) { ?>
     <script type="text/javascript">
     <?php foreach (array_filter($pjax) as $s) echo $s.";"; ?>

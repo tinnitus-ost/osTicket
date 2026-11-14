@@ -22,13 +22,16 @@
 
 class addFunc {
 
+    const UPDATECHECK_KEY     = 'ost_update_check'; // config key (namespace core)
+    const UPDATECHECK_TTL     = 86400;              // cache 24h on success
+    const UPDATECHECK_TTL_ERR = 3600;               // cache 1h on error / server offline
+
     static function checkForUpdates() {
-        if( !function_exists("curl_init") && !function_exists("curl_setopt") && 
-            !function_exists("curl_exec") && !function_exists("curl_close") ) {
+        if( !function_exists("curl_init") ) {
             // can't check for updates
-            return false; 
+            return false;
         }
-        
+
         $data = array();
         $data['v'] = THIS_VERSION;
         $data['g'] = GIT_VERSION;
@@ -42,8 +45,11 @@ class addFunc {
         curl_setopt($ch, CURLOPT_URL, "https://osticket.com.de/checkUpdates.php");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 2000); // connection setup
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 3000);        // whole request
+        curl_setopt($ch, CURLOPT_NOSIGNAL, 1);             // timeouts < 1s also for DNS resolving
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
         //return the transfer as a string 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
@@ -58,12 +64,40 @@ class addFunc {
             elseif(version_compare($cv[0],$lv[0]) == 0 && $cv[1] < $lv[1]) return array('np',$cv,$lv); // note a new patch
             else return array('lv',$cv,$lv); // note a latest version
         } else {
-            return 'false';
+            return false;
         }
     }
 
+    static function getCachedUpdateCheck($force = false) {
+        $store = (isset($GLOBALS['cfg']) && $GLOBALS['cfg'] instanceof Config)
+                 ? $GLOBALS['cfg'] : new Config('core');
+        $currentVersion = THIS_VERSION.'p'.DE_VERSION;
+        $cache = json_decode($store->get(self::UPDATECHECK_KEY, ''), true);
+
+        if (!$force && is_array($cache)
+                && ($cache['cv'] ?? null) === $currentVersion) {
+            $ttl = !empty($cache['ok']) ? self::UPDATECHECK_TTL
+                                        : self::UPDATECHECK_TTL_ERR;
+            if ((time() - (int) ($cache['ts'] ?? 0)) < $ttl)
+                return !empty($cache['ok']) ? $cache['lv'] : false;
+        }
+
+        // cache expired, empty or version changed -> check for updates
+        $lv = self::checkForUpdates();
+        $ok = is_array($lv);
+
+        $store->update(self::UPDATECHECK_KEY, json_encode([
+            'ts' => time(),            // time of check
+            'cv' => $currentVersion,   // installed version at time of check
+            'ok' => $ok,               // check successful?
+            'lv' => $ok ? $lv : null,  // result of checkForUpdates()
+        ]));
+
+        return $ok ? $lv : false;
+    }
+
     static function getUpdateData() {
-        if(!($lv = self::checkForUpdates()))
+        if(!($lv = self::getCachedUpdateCheck()))
             return false;
 
         $updateLink = (defined('DE_VERSION_TYPE') && DE_VERSION_TYPE=='PLUS')
@@ -680,11 +714,12 @@ class AntiSpam_ByTime {
         return openssl_encrypt($time->getTimestamp(), self::$cipher, self::$key, 0, self::$iv);
     }
 
-    static function checkTimeHash(string $timeHash='') {
+    static function checkTimeHash(mixed $timeHash=null): bool|string {
         if(!self::isAvailable())
             return false;
 
-        if(   !$timeHash 
+        if(   !$timeHash
+           || !is_string($timeHash)
            || !($decryptedTime = openssl_decrypt($timeHash, self::$cipher, self::$key, 0, self::$iv))
           ) // timeHash manipulated
             return __('Encrypted timespamp was manipulated');

@@ -241,7 +241,9 @@ class AdminNav extends StaffNav{
             $tabs['emails']=array('desc'=>__('Emails'),'href'=>'emails.php','title'=>__('Email Settings'));
             $tabs['staff']=array('desc'=>__('Agents'),'href'=>'staff.php','title'=>__('Manage Agents'));
             if (!is_null($this->getRegisteredApps()))
-                $tabs['apps']=array('desc'=>__('Applications'),'href'=>'apps.php','title'=>__('Applications'));
+// Anpassung Anfang: Apps - admin panel uses admin navigation
+                $tabs['apps']=array('desc'=>__('Applications'),'href'=>'apps.php?admin','title'=>__('Applications'));
+// Anpassung Ende: Apps - admin panel uses admin navigation
             $this->tabs=$tabs;
         }
 

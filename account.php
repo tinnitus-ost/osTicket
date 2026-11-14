@@ -71,7 +71,7 @@ elseif ($_POST) {
 // Anpassung Ende: Honeypot
 // Anpassung Anfang: spam protection by time
     if(   AntiSpam_ByTime::isAvailable()
-       && ($check = AntiSpam_ByTime::checkTimeHash($_POST['thash'])) !== true
+       && ($check = AntiSpam_ByTime::checkTimeHash($_POST['thash']??'')) !== true
       ) {
         $errors['err']=$check;
         $ost->logWarning(__('bot detection'),__('Client registation denied by bot detection! (form filling time checked)'), false);

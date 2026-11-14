@@ -44,6 +44,9 @@ $dispatcher = patterns('',
         url_get('^log/(?P<id>\d+)', 'syslog'),
         url_get('^context$', 'context'),
         url_get('^ticket_variables', 'ticket_variables'),
+// Anpassung Anfang: separate tooltip "Supported Variables" for tasks
+        url_get('^task_variables', 'task_variables'),
+// Anpassung Ende: separate tooltip "Supported Variables" for tasks
         url_get('^signature/(?P<type>\w+)(?:/(?P<id>\d+))?$', 'getSignature'),
         url_get('^(?P<id>\d+)/(?:(?P<lang>\w+)/)?manage$', 'manageContent'),
         url_get('^(?P<id>[\w-]+)/(?:(?P<lang>\w+)/)?manage$', 'manageNamedContent'),

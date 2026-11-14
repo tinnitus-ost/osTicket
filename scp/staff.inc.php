@@ -104,8 +104,9 @@ define('SESSION_MAXLIFE', $thisstaff->getMaxIdleTime());
 $thisstaff->refreshSession();
 
 /******* CSRF Protectin *************/
-// Enforce CSRF protection for POSTS
-if ($_POST  && !$ost->checkCSRFToken()) {
+// Enforce CSRF protection for state-changing methods
+if (in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'PATCH', 'DELETE'])
+        && !$ost->checkCSRFToken()) {
     Http::response(400, __('Valid CSRF Token Required'));
     exit;
 }
@@ -148,25 +149,4 @@ if($thisstaff->forcePasswdChange() && !$exempt) {
 $ost->setWarning($sysnotice);
 $ost->setPageTitle(__('osTicket :: Staff Control Panel'));
 
-// Anpassung Anfang: TimeRecordingPlugin - update timesheet, if already installed
-                if(    ($cfg->get('timesheet_version') || $cfg->get('timesheetInstalled') )
-                    && !$ost->isUpgradePending()// no update pending
-                    && strpos($_SERVER['PHP_SELF'], 'upgrade.php')===false // no update process
-                    && strpos($_SERVER['PHP_SELF'], 'ajax')===false // no ajax call
-                    && strpos($_SERVER['PHP_SELF'], 'autocron.php')===false // no autocron process
-                    && $thisstaff && $thisstaff->isValid() // is staff logged in?
-                    && file_exists(INCLUDE_DIR.'plugins/time_recording.phar')
-                    && !($plugin = Plugin::objects()->filter(['install_path' => 'plugins/time_recording.phar'])->count())
-                    && ($pm = new PluginManager())
-                    && ($plugin=$pm->install('plugins/time_recording.phar'))
-                  ) {
-                    $err = [];
-                    $plugin->update(['isactive' => 1],$err);
-                    $plugin->save();
-                    // delete old timesheet class file, if exists
-                    if(file_exists(INCLUDE_DIR.'class.timesheet.php') ) {
-                            unlink(INCLUDE_DIR.'class.timesheet.php');
-                    }
-                }
-// Anpassung Ende: TimeRecordingPlugin - update timesheet, if already installed
 ?>

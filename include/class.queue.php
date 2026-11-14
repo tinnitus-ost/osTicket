@@ -369,7 +369,11 @@ class CustomQueue extends VerySimpleModel {
             if (!isset($otherFields)) {
                 $otherFields = array();
                 $dfs = DynamicFormField::objects()
+/* Anpassung Anfang: plugin-ratings - add rating fields to advanced search
                     ->filter(array('form__type' => 'G'))
+*/
+                    ->filter(array('form__type__in' => ['G','TR']))
+// Anpassung Ende: plugin-ratings - add rating fields to advanced search
                     ->select_related('form');
                 foreach ($dfs as $field) {
                     $otherFields[$field->getId()] = array($field->form,
@@ -1004,7 +1008,7 @@ class CustomQueue extends VerySimpleModel {
             // Consider keyword searching
             if ($name === ':keywords') {
                 global $ost;
-                $qs = $ost->searcher->find($value, $qs, false);
+                $qs = $ost->searcher->find($value, $qs, false, ['boolean' => false]);
             }
             else {
                 $nullable = ($method === 'nset') ? false : null;

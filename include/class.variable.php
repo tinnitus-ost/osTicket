@@ -71,6 +71,15 @@ class VariableReplacer {
         $tag = mb_strtolower($tag);
         $rv = null;
 
+        // Deny sensitive attributes outright
+        $blacklist = [
+            'passwd',
+            'password',
+            'authkey',
+        ];
+        if (in_array($tag, $blacklist))
+            return "";
+
         if (!is_object($obj)) {
             if ($tag && is_array($obj) && array_key_exists($tag, $obj))
                 $rv = $obj[$tag];
@@ -271,6 +280,9 @@ class VariableReplacer {
             'message' => array('class' => 'MessageThreadEntry', 'desc' => 'Message from the EndUser'),
             'note' => array('class' => 'NoteThreadEntry', 'desc' => __('Internal Note')),
             'poster' => array('class' => 'User', 'desc' => 'EndUser or Agent originating the message'),
+// Anpassung Anfang: task templates - add poster and creator
+            'creator' => array('class' => 'Staff', 'desc' => __('Agent who created the task')),
+// Anpassung Ende: task templates - add poster and creator
             // XXX: This could be EndUser -or- Staff object
             'recipient' => array('class' => 'TicketUser', 'desc' => 'Message recipient'),
             'response' => array('class' => 'ResponseThreadEntry', 'desc' => __('Outgoing response')),
